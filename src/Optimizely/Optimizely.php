@@ -39,6 +39,7 @@ use Optimizely\Notification\NotificationCenter;
 use Optimizely\Notification\NotificationType;
 use Optimizely\UserProfile\UserProfileServiceInterface;
 use Optimizely\Utils\EventTagUtils;
+use Optimizely\Utils\MessagesUtils;
 use Optimizely\Utils\Validator;
 use Optimizely\Utils\VariableTypeUtils;
 
@@ -90,6 +91,11 @@ class Optimizely
     public $notificationCenter;
 
     /**
+    * array Associative array of log messages
+    */
+    public $_messageProvider;
+
+    /**
      * Optimizely constructor for managing Full Stack PHP projects.
      *
      * @param $datafile string JSON string representing the project.
@@ -107,6 +113,9 @@ class Optimizely
         $skipJsonValidation = false,
         UserProfileServiceInterface $userProfileService = null
     ) {
+        $path = __DIR__."/../../fullstack_logs/messages.json";
+        $this->_messageProvider = new MessagesUtils(file_get_contents($path));
+
         $this->_isValid = true;
         $this->_eventDispatcher = $eventDispatcher ?: new DefaultEventDispatcher();
         $this->_logger = $logger ?: new NoOpLogger();
@@ -287,13 +296,15 @@ class Optimizely
     public function activate($experimentKey, $userId, $attributes = null)
     {
         if (!$this->_isValid) {
-            $this->_logger->log(Logger::ERROR, 'Datafile has invalid format. Failing "activate".');
+            $message = $this->_messageProvider->get('INVALID_DATAFILE');
+            $this->_logger->log($message['level'], sprintf($message['text'], __FUNCTION__));
             return null;
         }
 
         $variationKey = $this->getVariation($experimentKey, $userId, $attributes);
         if (is_null($variationKey)) {
-            $this->_logger->log(Logger::INFO, sprintf('Not activating user "%s".', $userId));
+            $message = $this->_messageProvider->get('NOT_ACTIVATING_USER');
+            $this->_logger->log($message['level'], sprintf($message['text'], $userId));
             return null;
         }
 

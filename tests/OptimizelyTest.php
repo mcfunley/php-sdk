@@ -176,7 +176,7 @@ class OptimizelyTest extends \PHPUnit_Framework_TestCase
             ->method('sendImpressionEvent');
 
         $optimizelyMock->activate('some_experiment', 'some_user');
-        $this->expectOutputRegex('/Datafile has invalid format. Failing "activate"./');
+        $this->expectOutputRegex("/Datafile has invalid format. Failing 'activate'./");
     }
 
     public function testActivateInvalidAttributes()

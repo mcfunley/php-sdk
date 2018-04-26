@@ -1,0 +1,10 @@
+{
+	"INVALID_DATAFILE": {
+		"level": "ERROR",
+		"text": "Datafile has invalid format. Failing '%s'."
+	},
+	"NOT_ACTIVATING_USER":{
+		"level": "INFO",
+		"text": "Not activating user \"%s\"."
+	}
+}
